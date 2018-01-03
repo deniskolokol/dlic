@@ -1,0 +1,120 @@
+{% extends "web/dashboard.html" %}
+{% load staticfiles %}
+{% load compress %}
+{% block extracss %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/libs/bootstrap-switch.css">
+{% endblock %}
+{% block extrajs %}
+    {{ block.super }}
+    <script>
+        var wsToken = "{{ws_token}}",
+            wsSalt = "{{ws_salt}}",
+            wsUrl = "{{ws_url}}",
+            userAdmin = {% if user.is_superuser %}true{% else %}false{% endif %};
+    </script>
+    <script src="{{ STATIC_URL }}js/libs/sockjs-0.3.min.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/jquery-ui-1.10.4.custom.min.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/humanize.min.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/socket.io.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/websocket.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/backbone-websocket.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/d3.v3.min.js"></script>
+    {% if debug or request.GET.test %}
+        <script src="{{ STATIC_URL }}js/libs/react-with-addons-0.10.0-clashless.js"></script>
+    {% else %}
+        <script src="{{ STATIC_URL }}js/libs/react-with-addons-0.10.0-clashless.min.js"></script>
+    {% endif %}
+    {% compress js %}
+        <script src="{{ STATIC_URL }}js/libs/bootstrap-switch.min.js"></script>
+        <script src="{{ STATIC_URL }}js/libs/backbone-validation.js"></script>
+        <script src="{{ STATIC_URL }}js/jquery.fileupload.js"></script>
+        <script src="{{ STATIC_URL }}build/js/data-manager.js"></script>
+    {% endcompress %}
+{% endblock %}
+
+{% block content %}
+
+
+    <div class="dm-home">
+        <h1 id="dmHeading">Manage Your Data</h1>
+
+        <div class="dm-home-inner">
+            <div id="dataUpload" class="row-fluid">
+                <div class="span12">
+                    <div class="dm-upload">
+                        <div class="pull-left">
+                            <form action="{% url 'data-list' %}" method="post" enctype="multipart/form-data" id="upload_form">
+                                <div class="upload-button">
+                                    <input type="file" id="file" name="file">
+                                    <button class="btn btn-primary" autocomplete="off">
+                                        <i class="icon icon-white icon-upload"></i> Upload Data
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="pull-left upload-help">
+                            <a href="/help/data/" class="btn btn-link" target="_blank">
+                                <i class="icon icon-white icon-book"></i>
+                                Any problems? Read the docs about data formats
+                            </a>
+
+                            <div id="uploadHelp" class="modal hide fade" tabindex="-1" aria-hidden="true">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h2>File Upload Error</h2>
+                              </div>
+                              <div class="modal-body">
+                                <h4>File that you are trying to upload is not supported.</h4>
+                                <p>Please see the list of supported file types below:</p>
+                                <ul class="dm-filetypes">
+                                    <li><strong>.ts, .ts.gz, .ts.bz, .ts.bz2</strong><br>
+                                        Time series files can be used to train MRNN.
+                                    </li>
+                                    <li><strong>.csv, csv.gz, csv.bz, csv.bz2</strong><br>
+                                        CSV files can be used to train DeepNet and Autoencoder.
+                                    </li>
+                                    <li><strong>.tar.gz, .tar.bz, .tar.bz2, .zip</strong><br>
+                                        Archives can contain images for classification, a single <i>.csv</i> or single <i>.ts</i> file.
+                                    </li>
+                                </ul>
+                                <p>For more information please <a href="/help/data/">read the docs</a> about data formats.</p>
+                              </div>
+                              <div class="modal-footer">
+                                <button class="btn" autocomplete="off" data-dismiss="modal" aria-hidden="true">Close</button>
+                              </div>
+                            </div>
+
+                            <div id="uploadSizeError" class="modal hide fade" tabindex="-1" aria-hidden="true">
+                              <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                <h2>File Upload Error</h2>
+                              </div>
+                              <div class="modal-body">
+                                <h4>File that you are trying to upload is too big.</h4>
+                                <p>Uploaded data file size must be less than 1024 MB.</p>
+                              </div>
+                              <div class="modal-footer">
+                                <button class="btn" autocomplete="off" data-dismiss="modal" aria-hidden="true">Close</button>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress progress-striped active hide">
+                        <div class="bar" style="width: 0%"></div>
+                        <div class="progress-info">
+                            <span class="progress-info-complete"></span>
+                            <span class="progress-info-filesize"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="df-list">
+            </div>
+        </div>
+    </div>
+{% endblock %}

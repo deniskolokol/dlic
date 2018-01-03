@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load web_filters %}
+{% load compress %}
+
+{% block extracss %}
+    {% compress css %}
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/libs/bootstrap.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/libs/bootstrap-switch.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/libs/bootstrap-responsive.min.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/libs/jquery-ui-1.10.4.custom.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-theme.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/dashboard.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/wizard.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/libs/tipsy.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/tour/theme2/style.css">
+    {% endcompress %}
+{% endblock %}
+
+{% block extrajs %}
+    {% compress js %}
+        <script src="{{ STATIC_URL }}js/libs/bootstrap.min.js"></script>
+        <script src="{{ STATIC_URL }}js/dashboard.js"></script>
+        <script src="{{ STATIC_URL }}js/libs/jquery.easing.1.3.js"></script>
+        <script src="{{ STATIC_URL }}js/tour/jTour.js"></script>
+        <script src="{{ STATIC_URL }}js/tour/dashboard.js"></script>
+    {% endcompress %}
+{% endblock %}
+
+{% block intercom %}
+    <div id="intercomcustomwidget">
+        <div id="intercom-container">
+            <p>Support</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block navbar %}
+    <div class="navbar navbar-fixed-top navbar-inverse">
+        <div class="navbar navbar-inner">
+            <div class="container">
+                <a class="brand" href="{% url 'home' %}"><img src="{{ STATIC_URL }}img/nav_logo.png"></img></a>
+                <ul class="nav nav-main">
+                    <li {% if view == "data" %}class="active"{% endif %}><a href="{% url 'dashboard_main' %}"><i class="icon icon-white icon-list-alt"></i> Data</a></li>
+                    <li {% if view == "ensembles" %}class="active"{% endif %}><a href="{% url 'ensembles_main' %}"><i class="icon icon-white icon-qrcode"></i> Ensembles</a></li>
+                    {% if user.is_superuser %}
+                        <li {% if view == "admin" %}class="active"{% endif %}><a href="{% url 'dashboard_admin' %}">User's stats</a></li>
+                    {% endif %}
+
+                </ul>
+                <ul class="nav pull-right">
+                    <li><a href="{% url 'payments_index' %}"><span class="label label-inverse">Credit: {{ user.minutes_delta }} minutes</span></a></li>
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            {{ user }}
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="{% url 'dashboard_credentials' %}">Security Credentials</a>
+                            </li>
+                            <li>
+                                <a href="{% url 'payments_index' %}">Billing</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li>
+                                <a href="{% url 'logout' %}">Logout</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="divider-vertical"></li>
+                    <li><a href="http://www.ersatzlabs.com/documentation/"
+                           target="_blank" class="docs-link"><i class="icon icon-white icon-book"></i> Docs</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block messages %}
+    <div class="alert-block"></div>
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags %}{{message.tags}}{% else %}block {% endif %}">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {{ message|safe}}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+{% endblock %}

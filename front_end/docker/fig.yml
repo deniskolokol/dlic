@@ -1,0 +1,17 @@
+ersatz:
+  build: .
+  ports:
+    - "8000:8000"
+    - "5672:5672"
+    - "4000:4000"
+    - "8887:8887"
+  environment:
+    - CONTAINER_HOST
+    - DB_NAME
+    - DB_USER
+    - DB_PASSWORD
+    - BROKER_USER
+    - BROKER_PASSWORD
+    - BROKER_VHOST
+    - DMWORKER_VHOST
+    - REDIS_PASSWORD

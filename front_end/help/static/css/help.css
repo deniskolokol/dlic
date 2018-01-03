@@ -1,0 +1,36 @@
+.container-body {
+    width: 900px;
+    margin-bottom: 200px;
+    padding-left: 100px;
+}
+
+.container-body img {
+    display: block;
+    padding: 20px;
+    background: #ddd;
+    border: 1px solid #ccc;
+}
+
+h4 {
+    margin-top: 30px;
+}
+
+h3 {
+    margin-top: 50px;
+}
+
+.oglav .to-doc {
+    margin-left: 20px;
+}
+
+.oglav {
+    padding-top: 20px;
+    position: fixed;
+    top: 0;
+    overflow: auto;
+    height: 100%;
+    width: 200px;
+    margin-top: 40px;
+    left: 0;
+    background: #3d3d3d;
+}

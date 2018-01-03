@@ -1,0 +1,8 @@
+
+
+How to prepare local rabbitmq for testing
+
+
+    sudo rabbitmqctl add_vhost /ersatz_test
+    sudo rabbitmqctl add_user ersatz_test Jladsfw23421Jasdasd123sdasd
+    sudo rabbitmqctl set_permissions -p "/ersatz_test" ersatz_test ".*" ".*" ".*"  

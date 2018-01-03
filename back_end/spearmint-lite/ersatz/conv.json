@@ -1,0 +1,28 @@
+{
+    "dropout":{
+        "name":"dropout",
+        "type":"float",
+        "min":0.01,
+        "max":0.8,
+        "size":1,
+        "init": [0.012, 0.022]
+    },
+    "momentum_init":{
+        "name":"momentum_init",
+        "path": ["momentum", "init"],
+        "type":"float",
+        "min":0.5,
+        "max":0.9,
+        "size":1,
+        "init": [0.7, 0.7]
+    },
+    "learning_rate_init":{
+        "name":"learning_rate_init",
+        "path": ["learning_rate", "init"],
+        "type":"float",
+        "min":0.001,
+        "max":0.01,
+        "size":1,
+        "init": [0.0091, 0.0091]
+    }
+}

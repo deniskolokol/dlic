@@ -1,0 +1,27 @@
+#!/usr/bin/env python
+import os
+from termcolor import colored
+if 'ERSATZ_SETTINGS' not in os.environ:
+    print colored('WARNING: you didn\'t set ERSATZ_SETTINGS environment '
+                  'variable.\nScript will be run with '
+                  'ERSATZ_SETTINGS=settings.local.', 'red')
+    os.environ['ERSATZ_SETTINGS'] = 'settings.local'
+try:
+    from ersatz.misc import set_gpu_from_args
+except ImportError:
+    import sys
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+    from ersatz.misc import set_gpu_from_args
+
+set_gpu_from_args()
+
+from ersatz.dispatcher import ApiTrainDispatcher, ApiPredictDispatcher
+from ersatz.listener import ApiListener
+
+
+listener = ApiListener(runners=((ApiTrainDispatcher, 'train'),
+                                (ApiPredictDispatcher, 'predict')))
+try:
+    listener.loop()
+except KeyboardInterrupt:
+    listener.close()

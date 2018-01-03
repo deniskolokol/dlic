@@ -1,0 +1,54 @@
+{% extends "web/dashboard.html" %}
+{% block extrajs %}
+    {{ block.super }}
+    <script src="https://checkout.stripe.com/v2/checkout.js"></script>
+    <script src="{{ STATIC_URL }}js/stripe.js"></script>
+{% endblock %}
+{% block content %}
+<div>
+    <div class="billing-info">
+        <span>
+            <b>Billing info:</b><br>
+            Paid minutes: {{ user.minutes_paid }}<br>
+            Spent minutes: {{ user.minutes_spent }}<br>
+            Current ratio: $<span id="ratio">{{ ratio }}</span> for one minute.
+        </span>
+    </div>
+    <hr>
+    <div class="index row-fluid">
+        <div class="payment-form span6 {% if not customer %} hide {% endif %}">
+            <label><b>Buy minutes</b></label>
+            <div>
+                {% csrf_token %}
+                <input type="hidden" name="key" value="{{ key }}">
+                <div class="input-prepend control-group">
+                    <span class="add-on">minutes</span>
+                    <input type="number" name="minutes" class="span4" id="minutes">
+                </div>
+                <div class="input-prepend input-append">
+                    <span class="add-on">$</span>
+                    <input type="text" name="amount" class="span4" disabled="disabled">
+                    <button id="payButton" class="btn" type="button">Pay</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-form span6">
+            <label class="{% if not customer %} hide {% endif %} has-card">
+                <span><b>Your credit card</b><br>
+                    Last four numbers: <span id="last_4">{{ customer.card_last_4 }}</span><br>
+                    Expiring: <span id="exp_month">{{ customer.card_exp_month }}</span>/<span id="exp_year">{{ customer.card_exp_year }}</span></span>
+            </label>
+            <label class="{% if customer %} hide {% endif %} no-card">
+                <span>You didn't provide credit card information.</span>
+            </label>
+            {% if customer %}
+                <button id="updateCardButton" class="btn btn-primary">Update credit card</button>
+            {% else %}
+                <button id="updateCardButton" class="btn btn-primary enter-card">Enter credit card</button>
+            {% endif %}
+        </div>
+    </div>
+    <div class="loader hide"><span class="ajax-loader"></span></div>
+</div>
+
+{% endblock %}

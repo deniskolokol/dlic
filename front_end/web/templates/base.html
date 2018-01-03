@@ -1,0 +1,79 @@
+{% load web_filters %}
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>{% block title %}Ersatz{% endblock %}</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% block extracss %}
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/libs/bootstrap.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/libs/bootstrap-responsive.min.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/bootstrap-theme.css">
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">
+    {% endblock %}
+    <script type="text/javascript" src="http://use.typekit.net/ijp4ldl.js"></script>
+    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript">window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.10.2.min.js"><\/script>')</script>
+    <script src="{{ STATIC_URL }}js/libs/es5-shim.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/jquery.cookie.js"></script>
+    <script src="{{ STATIC_URL }}js/ajax-setup.js"></script>
+    <script>
+        window.SOCKET_URL="{{ SOCKET_URL }}";
+    </script>
+    {% block extrajs %}
+    {% endblock %}
+    <link href="{{ STATIC_URL }}img/favicon.ico" rel="shortcut icon" type="image/x-icon">
+</head>
+<body>
+{% block intercom %}{% endblock %}
+{% block navbar %}{% endblock %}
+
+<div class="page-wrap">
+    <div class="container container-body">
+        <div class="ersatz_top"></div>
+        {% block messages %}{% endblock %}
+        {% block content %}{% endblock %}
+    </div>
+    <div class="push"></div>
+</div>
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-37726049-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+{% if user.is_authenticated %}
+    <script id="IntercomSettingsScriptTag">
+      window.intercomSettings = {
+        email: "{{ user.email }}",
+        user_id: "{{ user.id }}",
+        created_at: {{ user.date_joined|date:"U" }},
+        {{ user.render_intercom_data }},
+        widget: {
+            activator: '#intercomcustomwidget'
+        },
+        user_hash: "{{ user.id|intercom_hash }}",
+        app_id: {% if debug %} "7f7b0e6de0eae29caadf255241315688cd6c10d1" {% else %} "rq58a5bq" {% endif %}
+      };
+    </script>
+    <script>(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',intercomSettings);}else{var d=document;var i=function(){i.c(arguments)};i.q=[];i.c=function(args){i.q.push(args)};w.Intercom=i;function l(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://static.intercomcdn.com/intercom.v1.js';var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s,x);}if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}};})()</script>
+{% endif %}
+
+<footer>
+    {% if user.is_superuser %}
+        <div id="ersatz-version">Version: {{ code_version }}</div>
+    {% endif %}
+</footer>
+</body>
+
+</html>

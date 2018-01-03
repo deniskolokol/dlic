@@ -1,0 +1,36 @@
+{% extends "web/dashboard.html" %}
+{% load compress %}
+
+{% block extrajs %}
+    <script>
+        var userAdmin = {% if user.is_superuser %}true{% else %}false{%endif%};
+        var ensembleId = {{ train_ensemble.id }};
+    </script>
+    {{ block.super }}
+    {% if train_ensemble.state == 'FINISHED' %}
+        {% compress js %}
+            <script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
+            <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
+            <script src="{{ STATIC_URL }}js/libs/socket.io.js"></script>
+            <script src="{{ STATIC_URL }}js/libs/websocket.js"></script>
+            <script src="{{ STATIC_URL }}js/libs/backbone-websocket.js"></script>
+            <script src="{{ STATIC_URL }}js/libs/backbone-validation.js"></script>
+        {% endcompress %}
+        {% if debug or request.GET.test %}
+            <script src="{{ STATIC_URL }}js/libs/react-with-addons-0.10.0-clashless.js"></script>
+        {% else %}
+            <script src="{{ STATIC_URL }}js/libs/react-with-addons-0.10.0-clashless.min.js"></script>
+        {% endif %}
+        {% compress js %}
+            <script src="{{ STATIC_URL }}build/js/predict-dashboard.js"></script>
+        {% endcompress %}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="dm-home">
+        <h1>Predictions Dashboard</h1>
+
+        <div id="predict"></div>
+    </div>
+{% endblock %}

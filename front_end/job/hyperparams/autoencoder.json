@@ -1,0 +1,51 @@
+{
+    "batch_size":{
+        "name":"batch_size",
+        "type":"int",
+        "min":100,
+        "max":150,
+        "size":1,
+        "init": [128, 128]
+    },
+    "maxnum_iter":{
+        "name":"maxnum_iter",
+        "type":"int",
+        "min":10,
+        "max":100,
+        "size":1,
+        "init": [100, 100]
+    },
+    "hidden_outputs":{
+        "name":"hidden_outputs",
+        "type":"int",
+        "min":10,
+        "max":30,
+        "size":1,
+        "init": [20, 20]
+    },
+    "noise_level":{
+        "name":"noise_level",
+        "type":"float",
+        "min":0.10,
+        "max":0.25,
+        "size":1,
+        "init": [0.2, 0.2]
+    },
+    "learning_rate_init":{
+        "name":"learning_rate_init",
+        "path": ["learning_rate", "init"],
+        "type":"float",
+        "min":0.001,
+        "max":0.01,
+        "size":1,
+        "init": [0.001, 0.001]
+    },
+    "irange":{
+        "name":"irange",
+        "type":"float",
+        "min":0.05,
+        "max":0.1,
+        "size":1,
+        "init": [0.05, 0.05]
+    }
+}

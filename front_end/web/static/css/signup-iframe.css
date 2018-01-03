@@ -1,0 +1,93 @@
+.signup-iframe {
+  background: #333;
+  font-family: "proxima-nova-1","proxima-nova-2",sans-serif;
+  font-size: 16px;
+  text-align: center;
+  color: #fff;
+}
+
+.signup-iframe * {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.signup-iframe h3 {
+  font-weight: 300;
+  font-size: 14px;
+}
+
+.signup-iframe .complete {
+  margin-top: 130px;
+  font-size: 16px;
+  color: #eee;
+}
+
+.signup-iframe .control-group {
+  margin-bottom: 20px;
+}
+
+.signup-iframe .control-group input {
+  border: 1px solid #c4c4c4;
+  width: 100%;
+  height: 40px;
+  padding: 4px 10px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  font-family: "proxima-nova-1","proxima-nova-2",sans-serif;
+  font-size: 16px;
+}
+
+.signup-iframe .errorlist {
+  margin: 0 0 10px;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+  text-align: left;
+  color: #ff85a4;
+}
+
+.signup-iframe .form-error .errorlist {
+  text-align: center;
+}
+
+.signup-iframe .control-group .errorlist {
+  margin: 5px 0 -10px;
+}
+
+.signup-iframe .btn {
+  display: block;
+  margin: 10px auto 0;
+  padding: 8px 16px;
+  border: 1px solid #d96d7c;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #f997b0;
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f6677b), to(#f997b0));
+  background-image: -webkit-linear-gradient(#f997b0, #f6677b);
+  background-image: -moz-linear-gradient(#f997b0, #f6677b);
+  background-image: -o-linear-gradient(#f997b0, #f6677b);
+  background-image: linear-gradient(#f997b0, #f6677b);
+  background-color: #f6677b;
+  -webkit-box-shadow: inset 0px 0px 2px #fff;
+  -moz-box-shadow: inset 0px 0px 2px #fff;
+  box-shadow: inset 0px 0px 2px #fff;
+  font-family: "museo-slab-1", "museo-slab-2";
+  font-weight: bold;
+  font-size: 20px;
+  color: #fefefe;
+  text-decoration: none !important;
+  text-shadow: 1px 1px 2px rgba(0,0,0,.9);
+  cursor: pointer;
+}
+
+.signup-iframe .btn:hover {
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f6677b), to(#f997b0));
+  background-image: -webkit-linear-gradient(#f6677b, #f997b0);
+  background-image: -moz-linear-gradient(#f6677b, #f997b0);
+  background-image: -o-linear-gradient(#f6677b, #f997b0);
+  background-image: linear-gradient(#f6677b, #f997b0);
+}
+

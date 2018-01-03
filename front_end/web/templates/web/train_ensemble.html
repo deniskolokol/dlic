@@ -1,0 +1,416 @@
+{% extends "web/dashboard.html" %}
+{% load compress %}
+
+{% block extracss %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/libs/bootstrap-switch.css">
+{% endblock %}
+
+{% block extrajs %}
+    <script>
+        var userAdmin = {% if user.is_superuser %}true{% else %}false{%endif%};
+        var runEnsembleURL = "{% url 'create_predict_ensemble' train_ensemble_pk=ensemble.pk %}";
+        var ensembleId = {{ ensemble.id }};
+    </script>
+    <script src="{{ STATIC_URL }}js/libs/jquery-ui-1.10.4.custom.min.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/bootstrap.min.js"></script>
+    {% compress js %}
+        <script src="{{ STATIC_URL }}js/libs/d3.v3.min.js"></script>
+        <script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
+        <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
+        <script src="{{ STATIC_URL }}js/libs/socket.io.js"></script>
+        <script src="{{ STATIC_URL }}js/libs/websocket.js"></script>
+        <script src="{{ STATIC_URL }}js/libs/backbone-websocket.js"></script>
+    {% endcompress %}
+    {% if debug or request.GET.test %}
+        <script src="{{ STATIC_URL }}js/libs/react-with-addons-0.10.0-clashless.js"></script>
+    {% else %}
+        <script src="{{ STATIC_URL }}js/libs/react-with-addons-0.10.0-clashless.min.js"></script>
+    {% endif %}
+    {% compress js %}
+        <script src="{{ STATIC_URL }}js/libs/bootstrap-switch.min.js"></script>
+        <script src="{{ STATIC_URL }}js/libs/backbone-validation.js"></script>
+        <script src="{{ STATIC_URL }}build/js/train-ensemble.js"></script>
+    {% endcompress %}
+{% endblock %}
+
+{% block content %}
+    <div id="model-app">
+        <div id="ensemble-view"></div>
+        <div id="model-list"></div>
+    </div>
+    <script id="stat-template" type="text/template">
+        <% _.each(charts, function(chart, chartId) { %>
+            <div>
+                <h4><%= chart.name %></h4>
+                <% if (chart.logScale) { %>
+                    <label> | log scale <input type="checkbox" data-param-id="<%= chartId %>" checked="checked" class="log-scale"></label>
+                <% } %>
+                <% if (chart.helpText) { %>
+                    <blockquote><%= chart.helpText %></blockquote>
+                <% } %>
+                <div class="select-stats row-fluid">
+                    <% _.each(chart.statsNames, function(statName) { %>
+                        <label style="color: <% print(color(statName)); %>">
+                            <% print(getHumanName(statName)) %> <input type="checkbox" data-param-id="<%= chartId %>" value="<%= statName %>" class="param-name" checked="checked">
+                        </label>
+                    <% }); %>
+                </div>
+                <div class="chart-stats graph"></div>
+            </div>
+         <% }); %>
+    </script>
+    <script id="old-model-template" type="text/template">
+        <hr/>
+        <h2 class="model-title">Model <%= id %><span></span></h2>
+        <div class="alert">Old model. Currently not supported.</div>
+        <div class="model-name">
+            <b>Model name:</b><span><%= model_name %></span>
+        </div>
+        <div>
+            <b>Training time: </b><span class="model-time"> <% print(training_time) %></span>
+        </div>
+    </script>
+    <script id="model-template" type="text/template">
+        <hr/>
+        <h2 class="model-title">Model <%= id %><span></span></h2>
+        <div class="model-alert"></div>
+
+        <div class="status">
+            <div class="resume-model-div input-append">
+                <select class="select-resume-iteration"></select>
+                <button class="btn resume-model" type="button">Resume model</button>
+                <button class="btn restart-model" type="button">Restart model</button>
+                <button class="btn finalize-model" type="button">Finalize</button>
+                <button class="btn delete-model" type="button">Delete model</button>
+            </div>
+        </div>
+
+        <b>Progress:</b>
+        <div class="row-fluid">
+            <div class="span6 progress">
+                <div style="width: 0%" class="bar"></div>
+            </div>
+        </div>
+        <ul class="nav nav-tabs">
+            <li class="active">
+            <a data-toggle="tab" class="last-chart-tab" href="#last_chart_tab_<%= id %>">Status</a>
+            </li>
+            <li class="hide"><a data-toggle="tab" class="all-charts-tab" href="#all_charts_tab_<%= id %>">Accuracy Matrix</a></li>
+            <li class="hide"><a data-toggle="tab" class="other-stats-tab" href="#other_stats_tab_<%= id %>">Training Statistics</a></li>
+            <li class="hide"><a data-toggle="tab" class="output-tab" href="#output_tab_<%= id %>">Confusion Matrix</a></li>
+            <li class="hide"><a data-toggle="tab" class="model-params-tab" href="#model_params_tab_<%= id %>">Hyperparams</a></li>
+            <li class="hide"><a data-toggle="tab" class="model-weights-href" href="#model_weights_tab_<%= id %>">Neural Map</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="last_chart_tab_<%= id %>" class="tab-pane active">
+
+                <div class="model-name">
+                    <b>Model name:</b><span><%= model_name %></span>
+                </div>
+                <div>
+                    <b>Training time: </b><span class="model-time"></span>
+                </div>
+                <div class="status">
+                    <b>Job status: </b>
+                    <span class="label">new</span><br><br>
+
+                    <div class="model-error-info">
+                        <p><b>Error: </b><span class="model-error"></span></p>
+                        {% if user.is_superuser %}
+                        <b>Traceback:</b>
+                        <div><pre class="model-traceback"></pre></div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="total-test-accuracy"></div><br>
+                <div class="last-accuracy-chart chart">No data available</div>
+            </div>
+            <div id="all_charts_tab_<%= id %>" class="tab-pane">
+                <table class="table all-accuracy-charts">
+                    <thead>
+                        <tr><th class="span1">Iteration</th><th>Accuracy matrix</th><th>Test accuracy %</th><th>Iter. Time</th></tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div id="other_stats_tab_<%= id %>" class="tab-pane other_stats_tab">
+            </div>
+            <div id="output_tab_<%= id %>" class="tab-pane">
+                <h4>Confusion matrix</h4>
+                <select class="select-output-iteration"></select>
+                <label class="checkbox">
+                    <input type="checkbox" class="percent-dim">group by predicted
+                </label>
+                <div class="confusion-matrix-test confusion-matrix">
+                    <h4>Test set</h4>
+                    <table class="table table-bordered confusion-matrix">
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div class="barcharts row-fluid">
+                        <div class="span12 no-left-margin">
+                            <div class="span6 no-left-margin">
+                                <h4 class="confusion-barchart-header"></h4>
+                                <div class="confusion-barchart"></div>
+                            </div>
+                            <div class="span6 no-left-margin">
+                                <h4 class="class-barchart-header"></h4>
+                                <div class="class-barchart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="confusion-matrix-train confusion-matrix">
+                    <h4>Train set</h4>
+                    <table class="table table-bordered confusion-matrix">
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <div class="barcharts row-fluid">
+                        <div class="span12 no-left-margin">
+                            <div class="span6 no-left-margin">
+                                <h4 class="confusion-barchart-header"></h4>
+                                <div class="confusion-barchart"></div>
+                            </div>
+                            <div class="span6 no-left-margin">
+                                <h4 class="class-barchart-header"></h4>
+                                <div class="class-barchart"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="model_params_tab_<%= id %>" class="tab-pane model_params_tab">
+            </div>
+            <div id="model_weights_tab_<%= id %>" class="tab-pane">
+                <div class="model-weights-chart"></div>
+            </div>
+        </div>
+        <div class="processingtrain">
+            <div class="loader hide"><span class="ajax-loader"></span></div>
+        </div>
+    </script>
+    <script id="model-settings-template" type="text/template">
+        <form>
+            <div class="model-settings row-fluid">
+                <div class="">
+                    <input type="submit" value="Apply settings" class="btn btn-small btn-primary apply-model-settings">
+                </div>
+                <p>You should stop training to apply settings or change them before training start.</p>
+                <table class="table table-hover">
+                    <tbody>
+                        <tr class="settings-separator">
+                            <td colspan="2">General Params</td>
+                        </tr>
+                        <% _.each(params.main, function(param) { %>
+                            <% if (param.type === "separator") { %>
+                                <tr class="settings-separator">
+                                    <td colspan="2"><%= param.label %></td>
+                                </tr>
+                            <% } else { %>
+                                <tr data-settings="<%= param.name %>">
+                                    <td><b><%= param.label %></b><br><% if (param.help) { %> <%= param.help %> <% } %></td>
+                                    <td>
+                                        <% (print(render(param.name, param.widget, param.type, param.extraclass, param.attr))) %>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            <% if (params.displayLayers) { %>
+            <div class="deepnet-layers-params">
+                <hr>
+                <h4>Layers params</h4>
+                <div class="add-layer-error-alert"></div>
+                    <div>
+                        <button type="button" class="btn btn-small add-layer">Add Layer</button>
+                    </div>
+                <div class="layers-list"></div>
+            </div>
+            <% } %>
+        </form>
+    </script>
+    <script id="maxout_convolution-layer-template" type="text/template">
+        <div class="layer-params">
+            <h4>Maxout Layer: <span class="layer-name"><%= layerName %></span></h4><button class="btn btn-small delete-layer">Delete</button>
+            <table class="table table-hover offset-top">
+                <tbody>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr data-settings="num_units">
+                        <td><b>number of maxout units</b><br></td>
+                        <td>
+                            <input type="text" data-settings="num_units" class="input-mini" data-type="digits">
+                        </td>
+                    </tr>
+                    <tr data-settings="num_pieces">
+                        <td><b>number of pieces</b><br></td>
+                        <td>
+                            <input type="text" data-settings="num_pieces" class="input-mini" data-type="digits">
+                        </td>
+                    </tr>
+                    <tr data-settings="irange">
+                        <td><b>range of uniform initialization</b><br></td>
+                        <td>
+                            <input type="text" data-settings="irange" class="input-mini" data-type="number">
+                        </td>
+                    </tr>
+                    <tr data-settings="kernel_shape">
+                        <td><b>kernel shape</b><br></td>
+                        <td>
+                            <input type="text" data-settings="kernel_shape" class="input-mini" data-type="digits">
+                        </td>
+                    </tr>
+                    <tr data-settings="pool_shape">
+                        <td><b>pool shape</b><br></td>
+                        <td>
+                            <input type="text" data-settings="pool_shape" class="input-mini" data-type="digits">
+                        </td>
+                    </tr>
+                    <tr data-settings="pad">
+                        <td><b>padding</b><br></td>
+                        <td>
+                            <input type="text" data-settings="pad" class="input-mini" data-type="digits">
+                        </td>
+                    </tr>
+                    <tr data-settings="pool_stride">
+                        <td><b>pool stride</b><br></td>
+                        <td>
+                            <input type="text" data-settings="pool_stride" class="input-mini" data-type="digits">
+                        </td>
+                    </tr>
+                    <tr data-settings="max_kernel_norm">
+                        <td><b>max kernel norm</b><br></td>
+                        <td>
+                            <input type="text" data-settings="max_kernel_norm" class="input-mini" data-type="number">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
+    <script id="maxout-layer-template" type="text/template">
+        <div class="layer-params">
+            <h4>Maxout Layer: <span class="layer-name"><%= layerName %></span></h4><button class="btn btn-small delete-layer">Delete</button>
+            <table class="table table-hover offset-top">
+                <tbody>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr data-settings="num_units">
+                        <td><b>number of maxout units</b><br></td>
+                        <td>
+                            <input type="text" data-settings="num_units" class="input-mini" data-type="digits">
+                        </td>
+                    </tr>
+                    <tr class="settings-separator">
+                        <td>Weights initialization
+                           <div class="make-switch switch-small weight-init-switch" data-on="success" data-off="default" data-off-label="Sparse" data-on-label="&nbspUniform&nbsp&nbsp">
+                           <input type="checkbox" data-group="separator">
+                            </div>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr data-settings="sparse_init">
+                        <td><b>initial sparseness</b><br>This defines the percentage of incoming weights per neuron that are non-zero at initialization. If you're not sure, leave it at 10%.</td>
+                        <td>
+                            <input type="text" data-settings="sparse_init" class="input-small slider" data-type="digits">
+                        </td>
+                    </tr>
+                    <tr data-settings="irange">
+                        <td><b>range of uniform initialization</b><br></td>
+                        <td>
+                            <input type="text" data-settings="irange" class="input-mini" data-type="number">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
+    <script id="sigmoid-layer-template" type="text/template">
+        <div class="layer-params">
+            <h4>Sigmoid Layer: <span class="layer-name"><%= layerName %></span></h4><button class="btn btn-small delete-layer">Delete</button>
+            <table class="table table-hover offset-top">
+                <tbody>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr data-settings="dim">
+                        <td><b>Number of hidden units</b><br></td>
+                        <td>
+                            <input type="text" data-settings="dim" class="input-mini" data-type="digits" value="200">
+                        </td>
+                    </tr>
+                    <tr class="settings-separator">
+                        <td>Weights initialization
+                           <div class="make-switch switch-small weight-init-switch" data-on="success" data-off="default" data-off-label="Sparse" data-on-label="&nbspUniform&nbsp&nbsp">
+                           <input type="checkbox" data-group="separator">
+                            </div>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr data-settings="sparse_init">
+                        <td><b>initial sparseness</b><br>This defines the percentage of incoming weights per neuron that are non-zero at initialization. If you're not sure, leave it at 10%.</td>
+                        <td>
+                            <input type="text" data-settings="sparse_init" class="input-small slider" data-type="digits">
+                        </td>
+                    </tr>
+                    <tr data-settings="irange">
+                        <td><b>range of uniform initialization</b><br></td>
+                        <td>
+                            <input type="text" data-settings="irange" class="input-mini" data-type="number">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
+    <script id="rectified_linear-layer-template" type="text/template">
+        <div class="layer-params">
+            <h4>Recified Linear Layer: <span class="layer-name"><%= layerName %></span></h4><button class="btn btn-small delete-layer">Delete</button>
+            <table class="table table-hover offset-top">
+                <tbody>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr data-settings="dim">
+                        <td><b>Number of hidden units</b><br></td>
+                        <td>
+                            <input type="text" data-settings="dim" class="input-mini" data-type="digits" value="200">
+                        </td>
+                    </tr>
+                    <tr class="settings-separator">
+                        <td>Weights initialization
+                           <div class="make-switch switch-small weight-init-switch" data-on="success" data-off="default" data-off-label="Sparse" data-on-label="&nbspUniform&nbsp&nbsp">
+                           <input type="checkbox" data-group="separator">
+                            </div>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr data-settings="sparse_init">
+                        <td><b>initial sparseness</b><br>This defines the percentage of incoming weights per neuron that are non-zero at initialization. If you're not sure, leave it at 10%.</td>
+                        <td>
+                            <input type="text" data-settings="sparse_init" class="input-small slider" data-type="digits">
+                        </td>
+                    </tr>
+                    <tr data-settings="irange">
+                        <td><b>range of uniform initialization</b><br></td>
+                        <td>
+                            <input type="text" data-settings="irange" class="input-mini" data-type="number">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
+{% endblock %}

@@ -1,0 +1,11 @@
+-r base.txt
+
+ipdb==0.7
+django-coverage==1.2.4
+django-debug-toolbar==0.9.4
+django-debug-panel==0.7.2
+pylint==1.1.0
+pytest==2.5.2
+pytest-django==2.6
+mock==1.0.1
+pytest-cov==1.6

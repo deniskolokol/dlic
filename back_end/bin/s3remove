@@ -1,0 +1,25 @@
+#!/usr/bin/env python
+import os
+from termcolor import colored
+if 'ERSATZ_SETTINGS' not in os.environ:
+    print colored('WARNING: you didn\'t set ERSATZ_SETTINGS environment '
+                  'variable.\nScript will be run with '
+                  'ERSATZ_SETTINGS=settings.local.', 'red')
+    os.environ['ERSATZ_SETTINGS'] = 'settings.local'
+try:
+    from ersatz import aws
+except ImportError:
+    import sys
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+    from ersatz import aws
+import argparse
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('key')
+args = parser.parse_args()
+key = aws.get_key(args.key)
+if key is None:
+    print 'Key doesn\'t exists'
+else:
+    key.delete()

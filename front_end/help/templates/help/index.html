@@ -1,0 +1,28 @@
+{% extends "web/dashboard.html" %}
+
+{% block extracss %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/help.css">
+    <link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/solarized_dark.min.css">
+{% endblock %}
+{% block extrajs %}
+    {{ block.super }}
+    <script src="{{ STATIC_URL }}/js/libs/highlight.pack.js"></script>
+    <script src="{{ STATIC_URL }}/js/help.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+{% endblock %}
+
+{% block content %}
+<div class="main row-fluid">
+    <div class="span2" >
+        <div class="oglav">
+            <a class="to-doc" href="/help/">Documentation</a>
+            <hr>
+            <ul class="refer">
+            </ul>
+        </div>
+    </div>
+    <div class="span10">
+        {{ markdown_content|safe }}
+    </div>
+{% endblock %}

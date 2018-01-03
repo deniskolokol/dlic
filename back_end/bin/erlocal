@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+import os
+from termcolor import colored
+if 'ERSATZ_SETTINGS' not in os.environ:
+    print colored('WARNING: you didn\'t set ERSATZ_SETTINGS environment '
+                  'variable.\nScript will be run with '
+                  'ERSATZ_SETTINGS=settings.local.', 'red')
+    os.environ['ERSATZ_SETTINGS'] = 'settings.local'
+try:
+    from ersatz.runners import LocalRunner
+except ImportError:
+    import sys
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+    from ersatz.runners import LocalRunner
+import argparse
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--model', type=str, required=True)
+parser.add_argument('--dtrain', type=str, required=True)
+args = parser.parse_args()
+with open(args.dtrain, 'r') as f:
+    runner = LocalRunner(args.model, train_dataset=f)
+    runner.run()

@@ -1,0 +1,24 @@
+{% extends "web/dashboard.html" %}
+{% load staticfiles %}
+{% block extrajs %}
+    {{ block.super }}
+{% endblock %}
+{% block extracss %}
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="offset3 span6">
+            <span>Conversion of "{{ df.filename }}" to format {{ to_format }}</span>
+            <form method="post" action="">
+                {% csrf_token %}
+                {{ form }}
+                <input type="submit" value="Convert">
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+
+

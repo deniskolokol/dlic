@@ -1,0 +1,23 @@
+{% extends "web/dashboard.html" %}
+{% load staticfiles %}
+{% block extrajs %}
+    {{ block.super }}
+{% endblock %}
+{% block extracss %}
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="row-fluid">
+        <div class="offset3 span6">
+            {{ df.key }}<br>
+            {{ df.meta }}<br>
+            {% for fmt in target_formats %}
+            <a href="{% url "dm_convert" datafile_id=df.pk to_format=fmt %}">Convert to: {{ fmt }}</a><br>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+
+

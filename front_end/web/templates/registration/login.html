@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="signup">
+    <h1>ersatz</h1>
+
+    <div class="signup-form">
+        {% if messages %}
+            <div class="alert alert-info">
+                <ul class="messages">
+                {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                        {{ message }}
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <form action="/login/{% if next %}?next={{ next }}{% endif %}" method="post" id="loginForm">
+            <div class="hgroup">
+                <h2>Log In</h2>
+                <h3>If you already have an account, please login.</h3>
+            </div>
+            {% csrf_token %}
+            <div class="form-error">{{ form.non_field_errors }}</div>
+
+            <div class="control-group">
+                <div class="controls">
+                    <input type="text" name="username" id="login_username" placeholder="Email" class="span3" autocomplete="off">
+                    {{ form.username.errors }}
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <input type="password" name="password" id="login_password" placeholder="Password" class="span3" autocomplete="off">
+                    {{ form.password.errors }}
+                </div>
+            </div>
+            <input type="submit" value="Login" class="btn btn-primary">
+            <p class="signup-links">
+                <a href="#" class="js-signup">Sign up!</a><br>
+                <a href="/password_reset/">Forgot password?</a>
+            </p>
+        </form>
+
+
+        <form action="/register/" method="post" id="singupForm" style="display: none;">
+            <div class="hgroup">
+                <h2>Sign Up</h2>
+                <h3>Please provide valid email address and pick a password.</h3>
+            </div>
+            {% csrf_token %}
+            <div class="form-error">{{ signup_form.non_field_errors }}</div>
+
+            <div class="control-group">
+                <div class="controls">
+                    <input type="text" name="username" id="signup_username" placeholder="Email" class="span4" autocomplete="off">
+                    {{ signup_form.username.errors }}
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <input type="password" name="password" id="signup_password" placeholder="Pick a password" class="span4" autocomplete="off">
+                    {{ signup_form.password.errors }}
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <input type="password" name="password_repeat" id="signup_password_repeat" placeholder="Repeat password" class="span4" autocomplete="off">
+                    {{ signup_form.password_repeat.errors }}
+                </div>
+            </div>
+            <input type="submit" value="Create account" class="btn btn-primary">
+            <p class="signup-links"><a href="#" class="js-login">Already have an account?</a></p>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(function() {
+        $('.js-login').on('click', function(e) {
+            e.preventDefault();
+            $('#loginForm').show();
+            $('#singupForm').hide();
+        });
+
+        $('.js-signup').on('click', function(e) {
+            e.preventDefault();
+            $('#loginForm').hide();
+            $('#singupForm').show();
+        });
+    });
+
+    if (window.location.href.indexOf('register') > -1) {
+        $('#loginForm').hide();
+        $('#singupForm').show();
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "web/dashboard.html" %}
+
+{% block content %}
+    <h2>User's statistics</h2>
+    <table class="table table-bordered table-hover">
+        <th>User</th><th>Finished</th><th>Avg. best test</th><th>Avg. best train</th>
+        {% for u in users %}
+        <tr>
+            <td>{{ u.email }}<br><br>
+                Last login: {{ u.last_login }}<br>
+                Login count: {{ u.login_count }}<br>
+            </td>
+            <td>Train ensembles: {{ u.finished_train_ensembles }}/{{ u.train_ensembles_count }}<br>
+                Models: {{ u.finished_models }}/{{ u.learn_models_count }}<br>
+                Predict ensembles: {{ u.finished_predict_ensembles }}/{{ u.predict_ensembles_count }}<br>
+                Training time: <span class="time-str">{{ u.training_time }}</span><br>
+                Predicting time: <span class="time-str">{{ u.predicting_time }}</span><br>
+            </td>
+            <td>{{ u.avg_test|floatformat:"-4" }}</td>
+            <td>{{ u.avg_train|floatformat:"-4" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

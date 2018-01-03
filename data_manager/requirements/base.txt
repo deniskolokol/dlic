@@ -1,0 +1,5 @@
+Unipath==1.0
+boto==2.21.0
+celery==3.1.7
+requests==2.1.0
+numpy==1.7.1

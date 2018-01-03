@@ -1,0 +1,58 @@
+{
+    "maxnum_iter":{
+        "name":"maxnum_iter",
+        "type":"int",
+        "min":20,
+        "max":20,
+        "size":1,
+        "init": [20, 20]
+    },
+    "h":{
+        "name":"h",
+        "type":"int",
+        "min":2,
+        "max":100,
+        "size":1,
+        "init": [50, 50]
+    },
+    "f":{
+        "name":"f",
+        "type":"int",
+        "min":2,
+        "max":100,
+        "size":1,
+        "init": [20, 50]
+    },
+    "cg_max_cg":{
+        "name":"cg_max_cg",
+        "type":"int",
+        "min":40,
+        "max":200,
+        "size":1,
+        "init": [150, 150]
+    },
+    "cg_min_cg":{
+        "name":"cg_min_cg",
+        "type":"int",
+        "min":1,
+        "max":30,
+        "size":1,
+        "init": [10, 10]
+    },
+    "lambda":{
+        "name":"lambda",
+        "type":"float",
+        "min":0.01,
+        "max":1.0,
+        "size":1,
+        "init": [0.01, 0.1]
+    },
+    "mu":{
+        "name":"mu",
+        "type":"float",
+        "min":0.001,
+        "max":0.01,
+        "size":1,
+        "init": [0.003, 0.01]
+    }
+}

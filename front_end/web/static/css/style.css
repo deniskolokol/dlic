@@ -1,0 +1,135 @@
+.signup {
+    max-width: 450px;
+    margin: 75px auto 25px;
+    text-align: center;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.signup h1 {
+    padding: 10px;
+    width: 86px;
+    height: 86px;
+    margin: 0 auto 16px;
+    background: url(../img/nav_logo.png) 50% 37px no-repeat #16a3fc;
+    text-indent: -9999px;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    border-radius: 100%;
+}
+
+.signup-form .hgroup {
+    margin: 0 0 20px;
+}
+
+.signup-form h2 {
+    font-weight: 400;
+    font-size: 34px;
+    line-height: normal;
+    margin: 0 0 4px;
+}
+
+.signup-form h3 {
+    margin: 0;
+    font-weight: normal;
+    font-size: 13px;
+    line-height: normal;
+    color: #ddd;
+}
+
+
+.signup-form input[type="text"],
+.signup-form input[type="password"] {
+    border: none;
+    border-bottom: 1px solid #3d3d3d;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    background: none;
+    color: #fff;
+    text-align: center;
+    font-family: "proxima-nova-1","proxima-nova-2",sans-serif;
+    font-size: 15px;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+}
+
+.signup-form input[type="text"]:focus,
+.signup-form input[type="password"]:focus {
+    border-bottom-color: #16a3fc;
+}
+
+
+.signup-form .errorlist {
+    max-width: 340px;
+    padding: 0 10px;
+    margin: -5px auto 16px;
+    list-style: none;
+    font-size: 13px;
+    color: #16a3fc;
+}
+
+.signup-form .errorlist li {
+    line-height: 15px;
+}
+
+.signup-form .btn-primary {
+    height: 32px;
+    margin-top: 10px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    font-family: "proxima-nova-1","proxima-nova-2",sans-serif;
+    font-size: 15px;
+}
+
+.signup-form .btn-primary:hover {
+    background: #3d3d3d;
+}
+
+.signup-form a.btn-primary {
+    height: 24px;
+    line-height: 24px;
+    padding: 4px 12px;
+}
+
+.signup-links {
+    margin: 24px 0;
+}
+
+.signup-links a {
+    color: #16a3fc;
+    text-decoration: underline;
+    margin: 0 5px;
+}
+
+.signup-links a:hover {
+    text-decoration: none;
+}
+
+
+.signup-form .alert {
+    max-width: 300px;
+    margin: 0 auto 16px;
+    padding: 8px 14px;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.form-error {
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.form-error .errorlist {
+    font-size: 13px;
+    margin: 0 0 16px;
+    color: #db4744;
+}
+
+.messages {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}

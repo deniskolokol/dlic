@@ -1,0 +1,12 @@
+export CONTAINER_HOST=<docker host ip>
+
+export DB_NAME=ersatz
+export DB_USER=ersatz
+export DB_PASSWORD=ija9fj432ertuerthjfsa
+
+export BROKER_USER=ersatz
+export BROKER_PASSWORD=ija9fj432ertuerthjfsa
+export BROKER_VHOST=ersatz
+export DMWORKER_VHOST=dmworker
+
+export REDIS_PASSWORD=FwXCALqGyUyIZ382KKv7KneFmJgis7SALyR3xGG7AZvUMdHT58FLZ3z2RH9JvnXprx3NIVwHesszq9U7CFkCZWuC6pES1HqbE4mS

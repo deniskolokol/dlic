@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Ersatz - Sign Up</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <script type="text/javascript" src="http://use.typekit.net/ijp4ldl.js"></script>
+    <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/signup-iframe.css">
+</head>
+
+<body class="signup-iframe">
+{% block content %}
+    {% if sign_up_done %}
+        <p class="complete">Sign up completed successfully, please check your email.</p>
+    {% else %}
+        <form action="/register/" method="post" id="singupForm">
+            <div class="hgroup">
+                <h3>Please provide a valid email address and pick a password.</h3>
+            </div>
+            {% csrf_token %}
+            <div class="form-error">{{ signup_form.non_field_errors }}</div>
+
+            <div class="control-group">
+                <div class="controls">
+                    <input type="text" name="username" id="signup_username" placeholder="Email" autocomplete="off">
+                    {{ signup_form.username.errors }}
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <input type="password" name="password" id="signup_password" placeholder="Pick a password" autocomplete="off">
+                    {{ signup_form.password.errors }}
+                </div>
+            </div>
+            <div class="control-group">
+                <div class="controls">
+                    <input type="password" name="password_repeat" id="signup_password_repeat" placeholder="Repeat password" autocomplete="off">
+                    {{ signup_form.password_repeat.errors }}
+                </div>
+            </div>
+
+            <input type="hidden" name="iframe" value="iframe" />
+            <input type="submit" value="Create account" class="btn btn-primary">
+        </form>
+    {% endif %}
+{% endblock %}
+</body>
+</html>

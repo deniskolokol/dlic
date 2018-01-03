@@ -1,0 +1,4 @@
+INSTALL
+=======
+
+docs/installation.rst
